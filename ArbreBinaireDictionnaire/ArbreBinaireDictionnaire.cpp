@@ -4,50 +4,59 @@
 #include "stdafx.h"
 #include "Arbre.h"
 
-
-void ajouterMot(string mot, Noeud<char> noeud);
+template<typename E>
+Noeud<E> ajouterMot(string mot, Noeud<E> noeud);
 
 
 int main()
 {
 	Arbre<char> *dico = new Arbre<char>();
+	
 
 	char *mot = "these";
 	char *mot2 = "thesard";
-	ajouterMot(mot, dico->getRacine());
-	ajouterMot(mot2, dico->getRacine());
+	Noeud<char> racine = ajouterMot(mot, dico->getRacine());
+	dico->setRacine(racine);
+
+	//ajouterMot(mot2, dico->getRacine());
+
+
 	//afficherDict(*dico);
 	//cin.get();
+
+	system("PAUSE");
     return 0;
 }
 
-void ajouterMot(string mot, Noeud<char> noeud)
+template<typename E>
+Noeud<E> ajouterMot(string mot, Noeud<E> noeud)
 {
+
 	if (mot.length() != 0) {
 		char lettre = mot[0];
 		string newMot = mot.substr(1, mot.length());
 		// Si noeud est vide
 		if (noeud.data == 0) {
-			noeud.data = lettre;
+			noeud.setData(lettre);
 			// S'il reste encore des lettres dans le mot
 			if (newMot.length() > 0) {
-				noeud.gauche = new Noeud<char>();
+				noeud.setGauche(new Noeud<char>());
 				ajouterMot(newMot, *noeud.gauche);
 			}
 		}
 		// Si noeud non vide
 		else {
-			// Si la lettre est la meme que le noeud
+			// Si la lettre est la meme que le noeud <!Il faut faire le test sur son fils gauche et non pas lui même !>
 			if (noeud.data == lettre) {
 				if (noeud.gauche == 0) {
-					noeud.gauche = new Noeud<char>();
+					noeud.setGauche(new Noeud<char>());
 				}
 				ajouterMot(newMot, *noeud.gauche);
 			}
 			// Si la lettre n'est pas la meme
 			else {
 				if (noeud.droite == 0) {
-					noeud.droite = new Noeud<char>();
+					noeud.setDroit(new Noeud<char>());
 				}
 				ajouterMot(mot, *noeud.droite);
 			}
@@ -60,5 +69,7 @@ void ajouterMot(string mot, Noeud<char> noeud)
 	else {
 		cout << "bouffon" << endl;
 	}
+	
+	return noeud;
 }
 

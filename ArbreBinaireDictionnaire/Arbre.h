@@ -19,7 +19,7 @@ class Arbre {
 private:
 
 	//Les membres données
-	Noeud<E> *racine;
+	Noeud<E> &racine;
 	long cpt;				// definit le nombre de noeuds dans l'arbre
 public:
 	//constructeurs
@@ -41,24 +41,28 @@ public:
 	//const E&  parent(const E &) const; 
 	//E successeur(const E &) const;
 	Noeud<E> getRacine() { return *racine; }
-
+	void setRacine(Noeud<E> racine);
 	void ajouterMot(const E &s);
 	void afficherDict() const;						// Afficher le dictionnaire
 };
 
+template<typename E>
+void setRacine(Noeud<E> racine) {
+	this->racine = racine;
+}
 
 //arbre.cpp
 template<typename E>
 Arbre<E>::Arbre() {
-	this->cpt = 0;
-	this->racine = new Noeud<E>();
+	this.cpt = 0;
+	this.racine = new Noeud<E>();
 }
 
 template<typename E>
 Arbre<E>::Arbre(const Arbre<E> & source)
 {
-	this->cpt = source.cpt;
-	this->racine = source.racine;
+	this.cpt = source.cpt;
+	this.racine = source.racine;
 }
 
 template<typename E>
@@ -96,10 +100,13 @@ Noeud<E> Arbre<E>::appartient(E lettre) const// const throw(...)
 	Noeud* Temp = &racine;
 	bool found = false;
 	queue<Noeud> hauteur_++;
+	
 	if (cpt == 0) {
 		throw("L'arbre est vide");
 	}
+
 	hauteur_++.push(racine);
+	
 	do {
 		Temp = hauteur_++.front();
 		if (Temp->gauche != 0) {
@@ -113,6 +120,7 @@ Noeud<E> Arbre<E>::appartient(E lettre) const// const throw(...)
 			found = true;
 		}
 	} while (!found && !hauteur_++.empty());
+	
 	return Temp;
 }
 
@@ -139,14 +147,17 @@ template<typename E>
 int Arbre<E>::nbFeuilles(Noeud<E> &noeud) const {
 	int cpt = 0;
 	if (noeud.gauche != 0) {
-		cpt += nbFeuilles(noeud.gauche);
-		if (noeud.droit != 0) {
-			cpt += nbFeuilles(noeud.droit);
-		}
+		cpt += nbFeuilles(noeud.gauche);	
 	}
-	else {
+	
+	if (noeud.droit != 0) {
+		cpt += nbFeuilles(noeud.droit);
+	}
+	
+	if((noeud.droit==0)&&(noeud.gauche==0)){
 		return 1;
 	}
+
 	return cpt;
 }
 
