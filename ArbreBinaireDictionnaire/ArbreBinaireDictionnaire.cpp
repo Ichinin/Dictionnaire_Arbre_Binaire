@@ -7,7 +7,7 @@
 
 void ajouterMot(string mot, Noeud<char> &noeud);
 void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud);
-
+bool chercherMot(string mot, Noeud<char> &noeud);
 
 int main()
 {
@@ -33,9 +33,48 @@ int main()
 
 	queue<char> *liste = new queue<char>();
 	afficherDictionnaire(*liste, *dico->getRacine());
+	cout << endl;
+	cout << chercherMot("arbuste", *dico->getRacine()) << endl;
+	cout << chercherMot("carotte", *dico->getRacine()) << endl;
 
 	system("PAUSE");
     return 0;
+}
+
+bool chercherMot(string mot, Noeud<char> &noeud) {
+	char lettre = mot[0];
+	string newMot = mot.substr(1, mot.length());
+	
+	// Si le noeud courant correspond a la lettre
+	if (noeud.data == lettre) {
+		// Si il reste encore des lettres
+		if (newMot.length() > 0) {
+			// S'il a un noeud gauche
+			if (noeud.gauche != 0) {
+				return chercherMot(newMot, *noeud.gauche);
+			}
+			// S'il n'a pas de noeud gauche
+			else {
+				return false;
+			}
+		}
+		// S'il ne reste plus de lettres
+		else {
+			return true;
+		}
+	}
+	// Si le noeud ne corrspond a la lettre
+	else {
+		// On regarde dans le noeud droit
+		if (noeud.droite != 0) {
+			return chercherMot(mot, *noeud.droite);
+		}
+		// La lettre n'est pas dans l'arbre
+		else {
+			return false;
+		}
+	}
+	
 }
 
 void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
