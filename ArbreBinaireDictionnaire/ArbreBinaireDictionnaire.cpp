@@ -5,26 +5,30 @@
 #include "Arbre.h"
 #include <queue>
 #include <stack>
+#include <fstream>
 
 void ajouterMot(string mot, Noeud<char> &noeud);
 void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud);
 bool chercherMot(string mot, Noeud<char> &noeud);
 void enleverMot(string mot, Noeud<char> &noeud);
+void lectureProbleme(string nomFichier, Noeud<char> &racine);
 
 int main()
 {
 	Arbre<char> *dico = new Arbre<char>();
 	
+	/*
+	METHODES DE TEST
 
 	char *mot = "las";
-	char *mot2 = "lit"; 
+	char *mot2 = "lit";
 	char *mot3 = "lasse";
 	char *mot4 = "bas";
 	char *mot5 = "arbre";
 	char *mot6 = "abas";
 	char *mot7 = "arbuste";
-	
-	
+
+
 	ajouterMot(mot, *dico->getRacine());
 	ajouterMot(mot2, *dico->getRacine());
 	ajouterMot(mot3, *dico->getRacine());
@@ -43,12 +47,34 @@ int main()
 	enleverMot("arbre", *dico->getRacine());
 	afficherDictionnaire(*liste, *dico->getRacine());
 	cout << endl;
-	
+
 	enleverMot("las", *dico->getRacine());
+	afficherDictionnaire(*liste, *dico->getRacine());*/
+
+	lectureProbleme("alain.dico", *dico->getRacine());
+	
+	queue<char> *liste = new queue<char>();
 	afficherDictionnaire(*liste, *dico->getRacine());
 
 	system("PAUSE");
     return 0;
+}
+
+void lectureProbleme(string nomFichier, Noeud<char> &racine) {
+	
+	fstream fichier(nomFichier, ios::in);
+
+	string prochain_mot;
+	
+	if (fichier.is_open()) {
+		getline(fichier, prochain_mot);
+		while (!fichier.eof()) {
+			getline(fichier, prochain_mot);
+			//cout << prochain_mot << endl;
+			ajouterMot(prochain_mot, racine);
+		}
+	}
+
 }
 
 void enleverMot(string mot, Noeud<char> &noeud) {
