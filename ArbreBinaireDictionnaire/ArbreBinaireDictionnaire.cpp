@@ -3,9 +3,10 @@
 
 #include "stdafx.h"
 #include "Arbre.h"
-
+#include <queue>
 
 void ajouterMot(string mot, Noeud<char> &noeud);
+void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud);
 
 
 int main()
@@ -20,8 +21,7 @@ int main()
 	char *mot5 = "arbre";
 	char *mot6 = "abas";
 	char *mot7 = "arbuste";
-	//Noeud<char> racine = ajouterMot(mot, dico->getRacine());
-	//dico->setRacine(racine);
+	
 	
 	ajouterMot(mot, *dico->getRacine());
 	ajouterMot(mot2, *dico->getRacine());
@@ -31,13 +31,37 @@ int main()
 	ajouterMot(mot6, *dico->getRacine());
 	ajouterMot(mot7, *dico->getRacine());
 
-	//afficherDict(*dico);
-	//cin.get();
+	queue<char> *liste = new queue<char>();
+	afficherDictionnaire(*liste, *dico->getRacine());
 
 	system("PAUSE");
     return 0;
 }
 
+void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
+
+	
+	if (noeud.droite!=0) {
+		queue<char> *copie = new queue<char>(liste);
+		afficherDictionnaire(*copie, *noeud.droite);
+	}
+
+	if (noeud.fin) {
+		liste.push(noeud.data);
+		int size = liste.size();
+		for (int i = 0; i < size; i++) {
+			cout<<liste.front();
+			liste.pop();
+		}
+		cout << endl;
+	}
+
+	if (noeud.gauche != 0) {
+		liste.push(noeud.data);
+		afficherDictionnaire(liste, *noeud.gauche);
+	}
+
+}
 
 void ajouterMot(string mot, Noeud<char> &noeud)
 {
