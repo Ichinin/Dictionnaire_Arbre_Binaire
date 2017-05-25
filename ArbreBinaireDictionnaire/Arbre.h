@@ -19,7 +19,7 @@ class Arbre {
 private:
 
 	//Les membres données
-	Noeud<E> &racine;
+	Noeud<E> *racine;
 	long cpt;				// definit le nombre de noeuds dans l'arbre
 public:
 	//constructeurs
@@ -34,13 +34,13 @@ public:
 													//const E& max() const; 							// Derniere feuille de la branche de droite
 													//const E& min() const; 							// Premier fils de gauche de la racine
 	int nbNoeuds() const; 							// Combien de noeud dans l'arbre
-	int nbFeuilles(Noeud<E> &) const;							// Combien de feuilles dans l'arbre
+	int nbFeuilles(Noeud<E> &) const;				// Combien de feuilles dans l'arbre
 	int hauteur() const; 							// hauteur de l'arbre (débute à 0 au premier noeud)
-	Noeud<E> appartient(E lettre) const;				// Si la lettre appartient au dictionnaire 
+	Noeud<E> appartient(E lettre) const;			// Si la lettre appartient au dictionnaire 
 	bool chercheMot(const string) const;
 	//const E&  parent(const E &) const; 
 	//E successeur(const E &) const;
-	Noeud<E> getRacine() { return *racine; }
+	Noeud<E>* getRacine() { return racine; }
 	void setRacine(Noeud<E> racine);
 	void ajouterMot(const E &s);
 	void afficherDict() const;						// Afficher le dictionnaire
@@ -54,15 +54,15 @@ void setRacine(Noeud<E> racine) {
 //arbre.cpp
 template<typename E>
 Arbre<E>::Arbre() {
-	this.cpt = 0;
-	this.racine = new Noeud<E>();
+	this->cpt = 0;
+	this->racine = new Noeud<E>();
 }
 
 template<typename E>
 Arbre<E>::Arbre(const Arbre<E> & source)
 {
-	this.cpt = source.cpt;
-	this.racine = source.racine;
+	this->cpt = source.cpt;
+	this->racine = source.racine;
 }
 
 template<typename E>

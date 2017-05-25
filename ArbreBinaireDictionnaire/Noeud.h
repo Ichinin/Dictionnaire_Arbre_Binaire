@@ -37,7 +37,7 @@ void Noeud<E>::setGauche(Noeud* noeudGauche) {
 
 template<typename E>
 void Noeud<E>::setDroit(Noeud* noeudDroit) {
-	gauche = noeudDroit;
+	droite = noeudDroit;
 }
 
 template<typename E>

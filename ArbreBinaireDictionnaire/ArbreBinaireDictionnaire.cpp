@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "Arbre.h"
 
-template<typename E>
-Noeud<E> ajouterMot(string mot, Noeud<E> noeud);
+
+void ajouterMot(string mot, Noeud<char> &noeud);
 
 
 int main()
@@ -13,13 +13,23 @@ int main()
 	Arbre<char> *dico = new Arbre<char>();
 	
 
-	char *mot = "these";
-	char *mot2 = "thesard";
-	Noeud<char> racine = ajouterMot(mot, dico->getRacine());
-	dico->setRacine(racine);
-
-	//ajouterMot(mot2, dico->getRacine());
-
+	char *mot = "las";
+	char *mot2 = "lit"; 
+	char *mot3 = "lasse";
+	char *mot4 = "bas";
+	char *mot5 = "arbre";
+	char *mot6 = "abas";
+	char *mot7 = "arbuste";
+	//Noeud<char> racine = ajouterMot(mot, dico->getRacine());
+	//dico->setRacine(racine);
+	
+	ajouterMot(mot, *dico->getRacine());
+	ajouterMot(mot2, *dico->getRacine());
+	ajouterMot(mot3, *dico->getRacine());
+	ajouterMot(mot4, *dico->getRacine());
+	ajouterMot(mot5, *dico->getRacine());
+	ajouterMot(mot6, *dico->getRacine());
+	ajouterMot(mot7, *dico->getRacine());
 
 	//afficherDict(*dico);
 	//cin.get();
@@ -28,8 +38,8 @@ int main()
     return 0;
 }
 
-template<typename E>
-Noeud<E> ajouterMot(string mot, Noeud<E> noeud)
+
+void ajouterMot(string mot, Noeud<char> &noeud)
 {
 
 	if (mot.length() != 0) {
@@ -46,7 +56,7 @@ Noeud<E> ajouterMot(string mot, Noeud<E> noeud)
 		}
 		// Si noeud non vide
 		else {
-			// Si la lettre est la meme que le noeud <!Il faut faire le test sur son fils gauche et non pas lui même !>
+			// Si la lettre est la meme que le noeud 
 			if (noeud.data == lettre) {
 				if (noeud.gauche == 0) {
 					noeud.setGauche(new Noeud<char>());
@@ -58,7 +68,24 @@ Noeud<E> ajouterMot(string mot, Noeud<E> noeud)
 				if (noeud.droite == 0) {
 					noeud.setDroit(new Noeud<char>());
 				}
-				ajouterMot(mot, *noeud.droite);
+				
+
+				if (noeud.data > lettre) {
+					Noeud<char> *aux = new Noeud<char>();
+					*aux = noeud;
+					noeud.data = lettre;
+					noeud.droite = aux;
+
+					if (newMot.length() > 0) {
+						noeud.setGauche(new Noeud<char>());
+						ajouterMot(newMot, *noeud.gauche);
+					}
+					
+				}
+				else {
+					ajouterMot(mot, *noeud.droite);
+				}
+				
 			}
 		}
 		// Si le mot est fini
@@ -69,7 +96,5 @@ Noeud<E> ajouterMot(string mot, Noeud<E> noeud)
 	else {
 		cout << "bouffon" << endl;
 	}
-	
-	return noeud;
 }
 
