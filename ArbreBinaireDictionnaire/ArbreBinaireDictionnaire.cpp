@@ -4,10 +4,12 @@
 #include "stdafx.h"
 #include "Arbre.h"
 #include <queue>
+#include <stack>
 
 void ajouterMot(string mot, Noeud<char> &noeud);
 void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud);
 bool chercherMot(string mot, Noeud<char> &noeud);
+void enleverMot(string mot, Noeud<char> &noeud);
 
 int main()
 {
@@ -34,11 +36,107 @@ int main()
 	queue<char> *liste = new queue<char>();
 	afficherDictionnaire(*liste, *dico->getRacine());
 	cout << endl;
+
 	cout << chercherMot("arbuste", *dico->getRacine()) << endl;
 	cout << chercherMot("carotte", *dico->getRacine()) << endl;
 
+	enleverMot("arbre", *dico->getRacine());
+	afficherDictionnaire(*liste, *dico->getRacine());
+	cout << endl;
+	
+	enleverMot("las", *dico->getRacine());
+	afficherDictionnaire(*liste, *dico->getRacine());
+
 	system("PAUSE");
     return 0;
+}
+
+void enleverMot(string mot, Noeud<char> &noeud) {
+	// On met tous les noeuds qui constituent le mot
+	stack<Noeud<char>* > *listeNoeudsMot = new stack<Noeud<char>*>();
+	Noeud<char> *noeudCourant = new Noeud<char>();
+	*noeudCourant = noeud;
+	bool continuer = true;
+
+	int numChar = 0;
+	char lettre = mot[numChar];
+
+	//Extraction de la liste des noeuds constituant le mot
+	while (continuer) {
+		//Si le noeud courant correspond à la lettre
+		if (noeudCourant->data == lettre) {
+			//Si c'est la fin du mot
+			if (numChar == (mot.length()-1)) {
+				if (noeudCourant->fin){
+					listeNoeudsMot->push(noeudCourant);
+				}
+				continuer = false;
+			}
+			//Ce n'est pas la fin du mot
+			else {
+				listeNoeudsMot->push(noeudCourant);
+
+				if (noeudCourant->gauche != 0) {
+					numChar++;
+					lettre = mot[numChar];
+					noeudCourant = noeudCourant->gauche;
+				}
+				else {
+					continuer = false;
+				}
+				
+			}
+		}
+		else {
+			if (noeudCourant->droite != 0) {
+				noeudCourant = noeudCourant->droite;
+			}
+			else {
+				continuer = false;
+			}
+		}
+	}
+
+	//Si le mot est présent
+	if (listeNoeudsMot->size() == mot.length()) {
+		
+		while (!listeNoeudsMot->empty()) {
+			noeudCourant = listeNoeudsMot->top();
+			listeNoeudsMot->pop();
+
+			//Si le noeud courant as un fils gauche
+			if (noeudCourant->gauche != 0) {
+				noeudCourant->fin = false;
+			}
+			else {
+				//S'il as un fils droit
+				if (noeudCourant->droite != 0) {
+					Noeud<char>* temp = new Noeud<char>();
+					temp = noeudCourant->droite;
+					noeudCourant->data = temp->data;
+					noeudCourant->droite = temp->droite;
+					noeudCourant->gauche = temp->gauche;
+					noeudCourant->fin = temp->fin;
+				}
+				//s'il n'as ni fils droit ni fils gauche
+				else {
+					Noeud<char>* parent = listeNoeudsMot->top();
+
+					if (parent->gauche->data == noeudCourant->data) {
+						parent->gauche = 0;
+					}
+					else {
+						parent->droite = 0;
+					}
+
+					delete noeudCourant;
+				}
+			}
+		}
+		
+	}
+
+
 }
 
 bool chercherMot(string mot, Noeud<char> &noeud) {
@@ -94,6 +192,8 @@ void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
 			liste.pop();
 		}
 		cout << endl;
+
+		//delete &liste;
 	}else if (noeud.gauche != 0) {
 		liste.push(noeud.data);
 		afficherDictionnaire(liste, *noeud.gauche);
