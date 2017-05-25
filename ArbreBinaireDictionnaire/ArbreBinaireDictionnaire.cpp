@@ -40,13 +40,14 @@ int main()
 
 void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
 
-	
-	if (noeud.droite!=0) {
-		queue<char> *copie = new queue<char>(liste);
-		afficherDictionnaire(*copie, *noeud.droite);
-	}
+	queue<char> *copie = new queue<char>(liste);
 
 	if (noeud.fin) {
+
+		if (noeud.gauche != 0) {
+			afficherDictionnaire(*copie, *noeud.gauche);
+		}
+
 		liste.push(noeud.data);
 		int size = liste.size();
 		for (int i = 0; i < size; i++) {
@@ -54,13 +55,14 @@ void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
 			liste.pop();
 		}
 		cout << endl;
-	}
-
-	if (noeud.gauche != 0) {
+	}else if (noeud.gauche != 0) {
 		liste.push(noeud.data);
 		afficherDictionnaire(liste, *noeud.gauche);
 	}
 
+	if (noeud.droite != 0) {
+		afficherDictionnaire(*copie, *noeud.droite);
+	}
 }
 
 void ajouterMot(string mot, Noeud<char> &noeud)
