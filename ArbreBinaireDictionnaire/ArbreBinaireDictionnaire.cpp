@@ -7,19 +7,24 @@
 #include <stack>
 #include <fstream>
 
+
+// Ajoute un mot. Il faut fournir le mot et la racine du dictionnaire. Les mots sont ajoutes dans l'ordre alphabetiques
 void ajouterMot(string mot, Noeud<char> &noeud);
+// Affiche le dictionnaire mot par mot
 void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud);
+// Cherche un mot dans le dictionnaire. Prend la racine du dictionnaire. Renvoie true si mot present
 bool chercherMot(string mot, Noeud<char> &noeud);
-void enleverMot(string mot, Noeud<char> &noeud);
-void lectureProbleme(string nomFichier, Noeud<char> &racine);
+// Supprime un mot du dictionnaire
+void enleverMot(string mot, Noeud<char> *noeud);
+// Ajoute tous les mots du file dans le dictionnaire
+void lireFile(string fileName, Arbre<char> &dico);
 
 int main()
 {
 	Arbre<char> *dico = new Arbre<char>();
-	
+	std::string fileName = "FichierTest/alain.dico";
+	//Test des differentes fonctions du dictionnaire
 	/*
-	METHODES DE TEST
-
 	char *mot = "las";
 	char *mot2 = "lit";
 	char *mot3 = "lasse";
@@ -44,44 +49,67 @@ int main()
 	cout << chercherMot("arbuste", *dico->getRacine()) << endl;
 	cout << chercherMot("carotte", *dico->getRacine()) << endl;
 
-	enleverMot("arbre", *dico->getRacine());
+	enleverMot("arbre", dico->getRacine());
 	afficherDictionnaire(*liste, *dico->getRacine());
 	cout << endl;
 
 	enleverMot("las", *dico->getRacine());
-	afficherDictionnaire(*liste, *dico->getRacine());*/
+	afficherDictionnaire(*liste, *dico->getRacine());
+	*/
 
-	lectureProbleme("alain.dico", *dico->getRacine());
-	
-	queue<char> *liste = new queue<char>();
+	// Test avec un des fichiers texte propose
+	cout << "AJOUT DES MOTS DANS LE DICTIONNAIRE" << endl;
+	lireFile(fileName, *dico);
+
+	cout << "AFFICHAGE DU DICTIONNAIRE" << endl;
+	std::queue<char> *liste = new queue<char>();
+	afficherDictionnaire(*liste, *dico->getRacine());
+	*liste = queue<char>();
+
+	cout << "TEST FONCTION SUPPRIMER MOT DICO" << endl;
+	enleverMot("a", dico->getRacine());
+	enleverMot("vont", dico->getRacine());
+	enleverMot("carotte", dico->getRacine());
 	afficherDictionnaire(*liste, *dico->getRacine());
 
-	system("PAUSE");
-    return 0;
-}
-
-void lectureProbleme(string nomFichier, Noeud<char> &racine) {
-	
-	fstream fichier(nomFichier, ios::in);
-
-	string prochain_mot;
-	
-	if (fichier.is_open()) {
-		getline(fichier, prochain_mot);
-		while (!fichier.eof()) {
-			getline(fichier, prochain_mot);
-			//cout << prochain_mot << endl;
-			ajouterMot(prochain_mot, racine);
-		}
+	cout << "TEST FONCTION RECHERCHE DICO" << endl;
+	cout << "1) recherche mot present" << endl;
+	string mot1 = "sous";
+	if (chercherMot(mot1, *dico->getRacine())) {
+		cout << mot1 << " present" << endl;
+	}
+	else {
+		cout << mot1 << " absent" << endl;
+	}
+	cout << "2) recherche mot absent" << endl;
+	string mot2 = "a";
+	if (chercherMot(mot2, *dico->getRacine())) {
+		cout << mot2 << " present" << endl;
+	}
+	else {
+		cout << mot2 << " absent" << endl;
 	}
 
+
+	cin.get();
+	return 0;
 }
 
-void enleverMot(string mot, Noeud<char> &noeud) {
+void lireFile(string fileName, Arbre<char> &dico) {
+	std::ifstream input(fileName);
+
+	for (std::string ligne; getline(input, ligne); )
+	{
+		ajouterMot(ligne, *dico.getRacine());
+		cout << ligne << endl;
+	}
+}
+
+void enleverMot(string mot, Noeud<char> *noeud) {
 	// On met tous les noeuds qui constituent le mot
 	stack<Noeud<char>* > *listeNoeudsMot = new stack<Noeud<char>*>();
 	Noeud<char> *noeudCourant = new Noeud<char>();
-	*noeudCourant = noeud;
+	noeudCourant = noeud;
 	bool continuer = true;
 
 	int numChar = 0;
@@ -92,8 +120,8 @@ void enleverMot(string mot, Noeud<char> &noeud) {
 		//Si le noeud courant correspond à la lettre
 		if (noeudCourant->data == lettre) {
 			//Si c'est la fin du mot
-			if (numChar == (mot.length()-1)) {
-				if (noeudCourant->fin){
+			if (numChar == (mot.length() - 1)) {
+				if (noeudCourant->fin) {
 					listeNoeudsMot->push(noeudCourant);
 				}
 				continuer = false;
@@ -110,7 +138,7 @@ void enleverMot(string mot, Noeud<char> &noeud) {
 				else {
 					continuer = false;
 				}
-				
+
 			}
 		}
 		else {
@@ -125,7 +153,7 @@ void enleverMot(string mot, Noeud<char> &noeud) {
 
 	//Si le mot est présent
 	if (listeNoeudsMot->size() == mot.length()) {
-		
+
 		while (!listeNoeudsMot->empty()) {
 			noeudCourant = listeNoeudsMot->top();
 			listeNoeudsMot->pop();
@@ -144,7 +172,7 @@ void enleverMot(string mot, Noeud<char> &noeud) {
 					noeudCourant->gauche = temp->gauche;
 					noeudCourant->fin = temp->fin;
 				}
-				//s'il n'as ni fils droit ni fils gauche
+				//s'il n'a ni fils droit ni fils gauche
 				else {
 					Noeud<char>* parent = listeNoeudsMot->top();
 
@@ -159,7 +187,9 @@ void enleverMot(string mot, Noeud<char> &noeud) {
 				}
 			}
 		}
-		
+	}
+	else {
+		cout << "Le mot: " << mot << "n'est pas present" << endl;
 	}
 
 
@@ -168,7 +198,7 @@ void enleverMot(string mot, Noeud<char> &noeud) {
 bool chercherMot(string mot, Noeud<char> &noeud) {
 	char lettre = mot[0];
 	string newMot = mot.substr(1, mot.length());
-	
+
 	// Si le noeud courant correspond a la lettre
 	if (noeud.data == lettre) {
 		// Si il reste encore des lettres
@@ -183,9 +213,11 @@ bool chercherMot(string mot, Noeud<char> &noeud) {
 			}
 		}
 		// S'il ne reste plus de lettres
-		else {
-			return true;
-		}
+		else
+			if (noeud.fin) {
+				return true;
+			}
+			else { return false; }
 	}
 	// Si le noeud ne corrspond a la lettre
 	else {
@@ -198,7 +230,7 @@ bool chercherMot(string mot, Noeud<char> &noeud) {
 			return false;
 		}
 	}
-	
+
 }
 
 void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
@@ -206,21 +238,17 @@ void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
 	queue<char> *copie = new queue<char>(liste);
 
 	if (noeud.fin) {
-
-		if (noeud.gauche != 0) {
-			afficherDictionnaire(*copie, *noeud.gauche);
-		}
-
-		liste.push(noeud.data);
-		int size = liste.size();
+		queue<char> *copie1 = new queue<char>(liste);
+		copie1->push(noeud.data);
+		int size = copie1->size();
 		for (int i = 0; i < size; i++) {
-			cout<<liste.front();
-			liste.pop();
+			cout << copie1->front();
+			copie1->pop();
 		}
 		cout << endl;
-
-		//delete &liste;
-	}else if (noeud.gauche != 0) {
+		delete copie1;
+	}
+	if (noeud.gauche != 0) {
 		liste.push(noeud.data);
 		afficherDictionnaire(liste, *noeud.gauche);
 	}
@@ -228,6 +256,8 @@ void afficherDictionnaire(queue<char> &liste, Noeud<char> &noeud) {
 	if (noeud.droite != 0) {
 		afficherDictionnaire(*copie, *noeud.droite);
 	}
+
+	delete copie;
 }
 
 void ajouterMot(string mot, Noeud<char> &noeud)
@@ -244,6 +274,9 @@ void ajouterMot(string mot, Noeud<char> &noeud)
 				noeud.setGauche(new Noeud<char>());
 				ajouterMot(newMot, *noeud.gauche);
 			}
+			else {
+				noeud.fin = true;
+			}
 		}
 		// Si noeud non vide
 		else {
@@ -252,36 +285,39 @@ void ajouterMot(string mot, Noeud<char> &noeud)
 				if (noeud.gauche == 0) {
 					noeud.setGauche(new Noeud<char>());
 				}
-				ajouterMot(newMot, *noeud.gauche);
+				if (newMot.length() > 0) {
+					ajouterMot(newMot, *noeud.gauche);
+				}
+				else {
+					noeud.fin = true;
+				}
 			}
 			// Si la lettre n'est pas la meme
 			else {
 				if (noeud.droite == 0) {
 					noeud.setDroit(new Noeud<char>());
 				}
-				
-
+				// Si la nouvelle lettre est plus petite que la lettre courante (alphabetiquement)
 				if (noeud.data > lettre) {
 					Noeud<char> *aux = new Noeud<char>();
 					*aux = noeud;
 					noeud.data = lettre;
 					noeud.droite = aux;
-
+					noeud.setGauche(new Noeud<char>());
+					noeud.fin = false;
 					if (newMot.length() > 0) {
-						noeud.setGauche(new Noeud<char>());
 						ajouterMot(newMot, *noeud.gauche);
 					}
-					
+					else {
+						noeud.fin = true;
+					}
+
 				}
 				else {
 					ajouterMot(mot, *noeud.droite);
 				}
-				
+
 			}
-		}
-		// Si le mot est fini
-		if (newMot.length() == 0) {
-			noeud.fin = true;
 		}
 	}
 	else {
