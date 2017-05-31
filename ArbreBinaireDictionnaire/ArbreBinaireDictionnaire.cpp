@@ -62,16 +62,14 @@ int main()
 	lireFile(fileName, *dico);
 
 	cout << "AFFICHAGE DU DICTIONNAIRE" << endl;
-	std::queue<char> *liste = new queue<char>();
-	afficherDictionnaire(*liste, *dico->getRacine());
-	*liste = queue<char>();
+	afficherDictionnaire(* new queue<char>(), *dico->getRacine());
 
 	cout << "TEST FONCTION SUPPRIMER MOT DICO" << endl;
 	enleverMot("a", dico->getRacine());
 	enleverMot("vont", dico->getRacine());
 	enleverMot("carotte", dico->getRacine());
-	afficherDictionnaire(*liste, *dico->getRacine());
-
+	afficherDictionnaire(* new queue<char>(), *dico->getRacine());
+	
 	cout << "TEST FONCTION RECHERCHE DICO" << endl;
 	cout << "1) recherche mot present" << endl;
 	string mot1 = "sous";
@@ -91,7 +89,7 @@ int main()
 	}
 
 
-	cin.get();
+	system("PAUSE");
 	return 0;
 }
 
@@ -173,23 +171,24 @@ void enleverMot(string mot, Noeud<char> *noeud) {
 					noeudCourant->fin = temp->fin;
 				}
 				//s'il n'a ni fils droit ni fils gauche
-				else {
-					Noeud<char>* parent = listeNoeudsMot->top();
+				else if (!listeNoeudsMot->empty()) {
+						Noeud<char>* parent = listeNoeudsMot->top();
 
-					if (parent->gauche->data == noeudCourant->data) {
-						parent->gauche = 0;
-					}
-					else {
-						parent->droite = 0;
-					}
+						if (parent->gauche->data == noeudCourant->data) {
+							parent->gauche = 0;
+						}
+						else {
+							parent->droite = 0;
+						}
 
-					delete noeudCourant;
+						delete noeudCourant;
 				}
+					
 			}
 		}
 	}
 	else {
-		cout << "Le mot: " << mot << "n'est pas present" << endl;
+		cout << "Le mot: " << mot << " n'est pas present" << endl;
 	}
 
 
@@ -321,7 +320,7 @@ void ajouterMot(string mot, Noeud<char> &noeud)
 		}
 	}
 	else {
-		cout << "bouffon" << endl;
+		cout << "Erreur : vous avez saisi un mot vide" << endl;
 	}
 }
 
